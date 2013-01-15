@@ -4499,6 +4499,14 @@ tetra.extend('model', function(_conf, _mod, _) {
                     bckAttr[a] = attr[a];
                 }
             }
+            
+            var _notify = function(type) {
+
+                return function() {
+                    _mod.debug.log('model ' + modelScope +'/'+ modelName + ' : ' + type, 'all', 'log', arguments[0]);
+                    tetra.controller.modelNotify(modelName, type, arguments);
+                };
+            };
 
             var methods = _.extend({
 
@@ -4529,7 +4537,7 @@ tetra.extend('model', function(_conf, _mod, _) {
                                 this.set(attrName, attributes[attrName]);
                             }
                         }
-
+                        _notify('update')(this);
                         return this;
                     } else {
                         return {save:function(){}};

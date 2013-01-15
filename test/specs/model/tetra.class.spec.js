@@ -5372,6 +5372,66 @@ describe("the model; ", function() {
         });
     });
     
+    describe("updating", function(){
+	    
+	    beforeEach(function() {
+        	this.spy = sinon.spy();
+        });
+        
+        afterEach(function() {
+	        this.spy = null;
+	        tetra.controller.destroy("myController", "myScope");
+	        tetra.model.destroy("myModel", "myScope");
+	    });
+	    
+	    it("should call the 'update' callback if a local update is successfull and give updated object as a context", function(){
+            
+            var that = this;
+            
+            tetra.model.register("myModel", {
+                scope: "myScope",
+                attr: {
+                    myTestNumber: 50
+                },
+                methods : function(attr){
+                    return {
+                        validate: function(attr, errors) {
+                            return errors;
+                        }
+                    };
+                }
+            });
+            
+            tetra.controller.register("myController", {
+                scope: "myScope",
+                use: ["myModel"],
+                constr: function(me, app, page, orm) {return {
+                        events: {
+                            model: {
+                                "myModel": {
+                                    "update": function(data){
+                                        that.spy(data);
+                                    }
+                                }
+                            }
+                        },
+                        methods: {
+                            init: function(){
+                                orm("myModel").create({}).update({myTestNumber : 0});
+                            }
+                        }
+                    };
+                }
+            });
+            
+            var response = this.spy.getCall(0).args[0];
+            
+            // Verify that the updated objects has correct value
+            expect(response.get("myTestNumber")).toBe(0);      
+        });
+	    
+    });
+    
     describe("global callbacks", function() {
       
       beforeEach(function() {
