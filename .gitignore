@@ -1,3 +1,7 @@
 .project
 .settings/
 .idea
+.DS_Store
+lib/deps/jquery/
+lib/deps/requirejs/
+examples/browser-tinysample/.DS_Store
