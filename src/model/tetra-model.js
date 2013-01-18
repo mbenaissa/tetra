@@ -28,11 +28,10 @@ tetra.extend('model', function(_conf, _mod, _) {
     'use strict';
 
     var
-        _models = {}, // model definitions
-        _classes = {}, // model classes
-        _debug
-        ;
-
+        _models = {},   // model definitions
+        _classes = {},  // model classes
+        _debug,         // debug feature
+        Store;          // localStorage
 
     // ORM
     // Manage ajax requests and operations on objects
@@ -50,6 +49,58 @@ tetra.extend('model', function(_conf, _mod, _) {
         } else if(_conf.mysql) {
             _.initMysql(_conf.mysql);
         }
+
+        // Store
+        // Manage localStorage() of model's instances
+        // ------------------------------------------------------------------------------
+        Store = function(name) {
+          this.name = name;
+          var store = localStorage.getItem(this.name);
+          this.data = (store && JSON.parse(store)) || {};
+        };
+
+        _.extend(Store.prototype, {
+          // Save the current state of the **Store** to *localStorage*.
+          save: function() {
+            localStorage.setItem(this.name, JSON.stringify(this.data));
+          },
+
+          create: function(model) {
+            this.data[model.ref] = model;
+            this.save();
+            return model;
+          },
+
+          // Update a model by replacing its copy in `this.data`.
+          update: function(model) {
+            this.data[model.ref] = model;
+            this.save();
+            return model;
+          },
+
+          // Retrieve a model from `this.data` by id.
+          find: function(model) {
+            return this.data[model.ref];
+          },
+
+          // Return the array of all models currently in storage.
+          findAll: function() {
+            var values = [];
+            for (var key in this.data) {
+              if (this.data.hasOwnProperty(key)) {
+                values.push(this.data[key]);
+              }
+            }
+            return values;
+          },
+
+          // Delete a model from `this.data`, returning it.
+          destroy: function(model) {
+            delete this.data[model.ref];
+            this.save();
+            return model;
+          }
+        });
 
         // ORM helpers
         var
@@ -185,6 +236,8 @@ tetra.extend('model', function(_conf, _mod, _) {
                     model = _models[scope +'/'+ name] || _models['g/'+ name]
                     ;
 
+                var localStorage = new Store('tetra-'+scope);
+                
                 var
                     _create = function(attributes, skipValid, skipCache) {
                         var Classes = _classes[scope +'/'+ name] || _classes['g/' + name];
@@ -206,6 +259,11 @@ tetra.extend('model', function(_conf, _mod, _) {
                         }
 
                         _mod.debug.log('model ' + scope +'/'+ name + ' : object ' + obj.get('ref') + ' created', 'all', 'info');
+
+                        // Save on localstorage if activated on model
+                        if ( !!model.store ) {
+                          localStorage.create(obj.getAttr());
+                        }
 
                         _notify('create')(obj);
                         return obj;
@@ -333,10 +391,34 @@ tetra.extend('model', function(_conf, _mod, _) {
                         });
                     },
 
-                    _fetch = function(cond, success, that) {
+                    _fetch = function(cond, modelStore, success, that) {
 
                         // Directly notify controllers
                         _notify('fetch')(cond);
+
+                        if ( !!modelStore ) {
+
+                            if (cond == null) {
+                              localStorage.findAll(); 
+                              return;
+                            }
+
+                            for (var key in cond) {
+                              if (cond.hasOwnProperty(key)) {
+                                  localStorage.find( cond );
+                                  return;
+                                }
+                            }
+
+                            var values = localStorage.findAll();
+                            
+                            _.each( values, function(index, value) {
+                              localStorage.destroy(value);
+                              _create(value);
+                            });
+
+                            _notify('append')(values);
+                        }
 
                         var uriParams = cond.uriParams;
                         _requester.queue({model:(that)?that:this}, _buildUrl(model.req.fetch, cond), {
@@ -468,6 +550,7 @@ tetra.extend('model', function(_conf, _mod, _) {
                 // for a success callback
                     _findByRef = function(ref, success) {
                         success(model.objects[ref] || null);
+                        return model.objects[ref];
                     },
 
                 // Retrieve a local object by passing in a cond object
@@ -587,13 +670,17 @@ tetra.extend('model', function(_conf, _mod, _) {
                         }
                     },
 
-                    _del = function(ref, attr, success) {
+                    _del = function(ref, attr, modelStore, success) {
 
                         var obj = model.objects[ref];
                         _notify('delete')(obj);
 
                         if(typeof attr === 'undefined') {
                             attr = {id: obj.get('id')};
+                        }
+
+                        if ( !!modelStore ) {
+                            localStorage.destroy( attr );
                         }
 
                         _requester.queue({model:this}, _buildUrl(model.req.del, attr), {
@@ -849,7 +936,8 @@ tetra.extend('model', function(_conf, _mod, _) {
             modelName = name,
             modelScope = params.scope,
             modelAttr = params.attr,
-            modelMethods = params.methods
+            modelMethods = params.methods,
+            modelStore = params.store
             ;
 
         return function() {
@@ -865,14 +953,6 @@ tetra.extend('model', function(_conf, _mod, _) {
                     bckAttr[a] = attr[a];
                 }
             }
-            
-            var _notify = function(type) {
-
-                return function() {
-                    _mod.debug.log('model ' + modelScope +'/'+ modelName + ' : ' + type, 'all', 'log', arguments[0]);
-                    tetra.controller.modelNotify(modelName, type, arguments);
-                };
-            };
 
             var methods = _.extend({
 
@@ -892,6 +972,10 @@ tetra.extend('model', function(_conf, _mod, _) {
                     if(typeof attr[attrName] !== 'undefined') {
                         attr[attrName] = value;
                     }
+                    if( !!modelStore ) {
+                        var store = new Store('tetra-'+modelScope);
+                        store.update(attr);
+                    }
                     return this;
                 },
 
@@ -903,7 +987,9 @@ tetra.extend('model', function(_conf, _mod, _) {
                                 this.set(attrName, attributes[attrName]);
                             }
                         }
-                        _notify('update')(this);
+
+                        _mod.orm(modelScope)(modelName).notify('update')(this);
+
                         return this;
                     } else {
                         return {save:function(){}};
@@ -927,7 +1013,7 @@ tetra.extend('model', function(_conf, _mod, _) {
 
                 // Delete the object from the server. Will call the ORM.
                 remove: function(params, success) {
-                    _mod.orm(modelScope)(modelName).del(attr.ref, _.extend(attr, params), success);
+                    _mod.orm(modelScope)(modelName).del(attr.ref, _.extend(attr, params), modelStore, success);
                 }
             }, modelMethods(attr));
 

@@ -86,5 +86,5 @@ module.exports = function( grunt ) {
 	});
 
 	// Default task.
-	grunt.registerTask("default", "lint concat");
+	grunt.registerTask("default", "concat lint");
 };
