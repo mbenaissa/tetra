@@ -1,7 +1,7 @@
-![tetra logo](https://raw.github.com/viadeo/tetra/master/tetra.png) ![travis](https://secure.travis-ci.org/viadeo/tetra.png)  
+![todomvc logo](https://raw.github.com/addyosmani/todomvc/gh-pages/media/logo.png) ![travis](https://secure.travis-ci.org/viadeo/tetra.png)  
 =====
 
-## Tetra, a clean MVC javascript framework
+## TODOMVC with Tetra, a clean MVC javascript framework
 
 Tetra aims to help developers build faster, more maintainable and better structured code.
 
@@ -19,38 +19,6 @@ Additionnally, the "[bootnode](/viadeo/tetra/wiki/Bootnode)" feature allows Java
 Slides about Tetra.js & Tetra UI for a quick overview:
 <http://viadeo.github.com/tetra-slides/2012-11-20/>
 
-## Tetra core tree
-
-   * **lib**
-      * **conf**: Tetra.js configuration files for each platform.
-      * **deps**: External dependencies of the client-side framework.
-      * **mod**: Additonal modules of the framework. Ability to extend native implementation with advanced features. Already implemented modules are:
-		 * **libAbstracted**: Abstracted library to use Tetra.js with librairies other than jQuery. Prototype and Node.js connectors are already implemented.
-		 * **require**: The RequireJS library, used client- and server-side (Node.js) dependency loading
-		 * **tmpl**: Templating system integrated into the controller and view layer in both the client and server environments.
-      * _tetra-controller.js_: Controller layer
-	  * _tetra-model.js_: Model layer
-	  * _tetra-view.js_: View layer
-	  * _tetra.js_: Core of Tetra.js framework, an interface that provides acceess to the MVC layers, framework extensions and debug features.
-
-Configuration files are used to construct the core object needed to build mvc apps. It must have the following structure :
-
-```js
-tetra.extend({
-	conf: {
-		env: 'jQuery',
-		jsVersion: 347,
-		enableBootnode: true
-	}
-}).start();
-```
-
-If the default settings are sufficient, you need only call the start function (as in /conf/default.js):
-
-```js
-tetra.start();
-```
-
 ## Applications tree
 By default, the Tetra.js framework expects a particular directory tree structure. Following this convention allows you to use the bootnode feature to dynamically load JavaScript resources.
 
@@ -65,15 +33,9 @@ By default, the Tetra.js framework expects a particular directory tree structure
 			   * _***.ui.js_
       * **model**: Global model classes
 
-## Table of content
-   * [View layer](/viadeo/tetra/wiki/View-layer)
-   * [Controller layer](/viadeo/tetra/wiki/Controller-layer)
-   * [Model layer](/viadeo/tetra/wiki/Model-layer)
-   * [ORM: Object-Relational Mapping](/viadeo/tetra/wiki/ORM:-Object-Relational-Mapping)
-   * [Templating system](/viadeo/tetra/wiki/Templating-system)
-   * [Bootnode](/viadeo/tetra/wiki/Bootnode)
-   * [Debugger](/viadeo/tetra/wiki/Debugger)
-	  
+## More informations
+<https://github.com/viadeo/tetra/>
+
 ## Licence
 (The MIT License)
 
