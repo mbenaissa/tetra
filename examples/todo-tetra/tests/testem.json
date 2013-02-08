@@ -1,0 +1,12 @@
+{
+    "framework": "jasmine",
+    "src_files": [
+        "lib/tetra/tetra-core.js",
+        "lib/jasmine-jquery/1.4.2/lib/jasmine-jquery.js",
+        "lib/utils.js",
+        "lib/Sinon.JS/sinon-1.5.2.js",
+        "lib/Sinon.JS/sinon-ie-1.5.2.js",
+        "../js/tetramvc/apps/todo/**/*.ctrl.js",
+        "specs/**/*.spec.js"
+    ]
+}
