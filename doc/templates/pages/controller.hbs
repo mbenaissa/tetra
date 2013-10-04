@@ -7,21 +7,21 @@ tetra.controller.register(name, Object)
 </div>
 
 <p class="description">
-<b>name</b> The name of the controller. It must be the same of the file name. For example: if you call your controller likeCtrl, the file will be called likeCtrl.ctrl.js.<br>
+    <b>name</b> The name of the controller. It must be the same as the file name. For example: if you call your controller likeCtrl, the file must be called likeCtrl.ctrl.js.<br>
 </p>
 
 <p class="description">
-<b>Object</b> This object describes view and models’ listeners and notifiers. A more detailed definition follows.
+    <b>Object</b> This object configures the controller, and describes view and model listeners and notifiers. A more detailed definition follows.
 </p>
 
-<p class="subtitle">Controller description</p>
+<p class="subtitle">Controller configuration</p>
 
 <div class="code">
 <pre>
-{  
-    scope : 'scope name',  
-    use : ['Mymodel', 'OtherModel', ...],   
-    constr : function  
+{
+    scope : 'scope name',
+    use : ['Mymodel', 'OtherModel', ...],
+    constr : function
 }
 </pre>
 </div>
@@ -29,113 +29,113 @@ tetra.controller.register(name, Object)
 <p class="subtitle">Parameters</p>
 
 <p class="description">
-<b>scope</b> this is the visibility scope of message sent by the controller to view. Actually this is the application scope and it must be the application name. For example: for the like feature, the scope must be likeApp.<br>
+    <b>scope</b> The scope acts as a namespace for messages sent by the controller to the view. <br>
 </p>
 <p class="description">
-<b>use</b> An Array list of model require by the controller to work properly. This list is mandatory when the controller is loaded using the bootstrap. If the nested model is a global one, prefix its name with g/ (example: use: ['g/name']).<br>
+    <b>use</b> An Array of models used by the controller. If the nested model is a global one, prefix its name with g/ (example: use: ['g/name']).<br>
 </p>
 <p class="description">
-<b>constr</b> is a function returning controller's behaviors in the following context.
+    <b>constr</b>  a function returning a controller's public API
 </p>
 
 <p class="subtitle">Contructor</p>
 
 <div class="code">
 <pre>
-constr : function(me, app, page, orm) { 
-  return {  
+constr : function(me, app, page, orm) {
+  return {
     events : {...},
-    methods : {...}  
+    methods : {...}
   };
 }
 </pre>
 </div>
 
 <p class="description">
-<b>me</b> this variable gives you access to all datas of the controller object generated : scope, events, methods and all other attributes you can attach to.<br>
+    <b>me</b> similar to 'this' in OO JavaScript, this variable gives you access to all attributes of the controller object itself and allows you to define your own functions and attributes<br>
 </p>
 <p class="description">
-<b>app</b> the communication pipe to all views in the scope.<br>
+    <b>app</b> the communication pipe to all views in the scope.<br>
 </p>
 <p class="description">
-<b>page</b> the communication pipe to all controllers.<br>
+    <b>page</b> the communication pipe to all controllers.<br>
 </p>
 <p class="description">
-<b>orm</b> object relational model of the core framework. it allows you to create, retrieve, update or delete data objects and synchronize data with the server. It is a total abstraction of ajax calls. A deeper explanation will be done in another section.
+    <b>orm</b> object relational model of the core framework. it allows you to create, retrieve, update or delete data objects and synchronize data with the server. It is a total abstraction of ajax calls.
 </p>
 
 <p class="subtitle">Events</p>
 
 <div class="code">
 <pre>
-events : {  
-   model : {  
-      'MyModel' : {   
-          'append' : function(obj){...},  
-          'save' : function(obj){...},  
-          'saved' : function(obj){...},  
-           ...  
-       },  
-       ...    
-   },  
-   view : {  
-      'message' : function(data){...},  
-       ...  
-   },  
-   controller : {  
-      'message from page.notify' : function(data){...},  
-       ...  
-   } 
+events : {
+   model : {
+      'MyModel' : {
+          'append' : function(obj){...},
+          'save' : function(obj){...},
+          'saved' : function(obj){...},
+           ...
+       },
+       ...
+   },
+   view : {
+      'message' : function(data){...},
+       ...
+   },
+   controller : {
+      'message from page.notify' : function(data){...},
+       ...
+   }
 }
 </pre>
 </div>
 
-<p class="description">events: description of callbacks executed as a consequence of view demand or model change.</p>
+<p class="description">events: callbacks triggered by a model action or a message sent from the view</p>
 
-<p class="description">  
+<p class="description">
     Here is the list of all models change messages :
 </p>
 <p class="description">
-    <b>call</b> operations done before each ajax call.<br>
+    <b>call</b> invoked before each ajax call.<br>
 </p>
 <p class="description">
-    <b>complete</b> operations done after each ajax call.<br>
+    <b>complete</b> invoked after each ajax call.<br>
 </p>
 <p class="description">
-    <b>create</b> Operations done at the creation of an object. Receives the created object in parameter.<br>
+    <b>create</b> invoked after the creation of an object. Receives the created object as a parameter.<br>
 </p>
 <p class="description">
-    <b>fetch</b> Operations done before a fetch call. Receives the conditions of the request.<br>
+    <b>fetch</b> called before a fetch operation. Receives the conditions of the request.<br>
 </p>
 <p class="description">
-    <b>append</b> Callback of a succeed fetch call. Receives the collection of results in parameter.<br>
+    <b>append</b> called after a successful fetch. Receives the collection of results as a parameter.<br>
 </p>
 <p class="description">
-    <b>save</b> Operations done before a save call. Receives the updated object in parameter.<br>
+    <b>save</b> invoked before a save call. Receives the updated object as a parameter.<br>
 </p>
 <p class="description">
-    <b>saved</b> Callback of a succeeded save call. Receives the updated object in parameter.<br>
+    <b>saved</b> invoked after a save call. Receives the updated object as a parameter.<br>
 </p>
 <p class="description">
-    <b>delete</b> Operations done before a delete call. Receives the updated object in parameter.<br>
+    <b>delete</b> called before a delete call. Receives the updated object as a parameter.<br>
 </p>
 <p class="description">
-    <b>deleted</b> Callback of a succeed delete call. Receives the updated object in parameter.<br>
+    <b>deleted</b> called after a successful delete. Receives the updated object as a parameter.<br>
 </p>
 <p class="description">
-    <b>reset</b> Operations done before a reset. Receives the collection of all objects in parameter.<br>
+    <b>reset</b> invoked before a reset. Receives the collection of objects as a parameter.<br>
 </p>
 <p class="description">
-    <b>reseted</b> Callback of a succeed reset call. Receives the name of the model in parameter.<br>
+    <b>reseted</b> invoked after a successful reset call. Receives the name of the model as a parameter.<br>
 </p>
 <p class="description">
-    <b>invalid</b> Operations done when updated attributes of an object are not valid. Receive the list of incorrect attr and the obj instance in parameter.<br>
+    <b>invalid</b> callback invoked when an object update fails due to invalid attributes. Receives the list of incorrect attr and the objinstance as parameters.<br>
 </p>
 <p class="description">
-    <b>alert</b> Callback of successful call (200) with alerts. Receives alert type (save, fetch, ...), alerts object, conditions of the call or object.<br>
+    <b>alert</b> callback invoked when a request returns a 200 response, but with with alerts (i.e. validation alerts). Receives alert type (save, fetch, ...), alert object, conditions of the call or object as parameters.<br>
 </p>
 <p class="description">
-    <b>error</b> Callback of every failed call (!=200). Receives error type (save, fetch, ...), error code (500, 404, ...), errors object, conditions of the call or object.
+    <b>error</b> callback invoked for every failed call (!=200). Receives error type (save, fetch, ...), error code (500, 404, ...), error object, conditions of the call or object as parameters.
 </p>
 
 Sample code ...@

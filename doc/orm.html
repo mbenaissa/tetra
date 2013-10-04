@@ -57,7 +57,7 @@
                     <p class="h3">Define an ORM</p>
 
 <p class="description">
-The ORM is an abstraction layer of data access. In a web use, it abstracts the ajax calls. It assurs too the integrity of data by validating them and controlling the storage. Instead of returning raw data, it builds objects and returns an instance or a collection. When calling the orm, you have to specified on which object it must be done. For example to create a likeObj instance you must write :
+The ORM is an abstraction layer for data access. In a web context, it abstracts out asynchronous calls. It guarantees the integrity of data and standardises how this data is used in the application. When calling the orm, you must specify which model object you wish to interact with. For example to create a likeObj instance you would write :
 <p>
 
 <div class="code">
@@ -67,13 +67,13 @@ orm('likeObj').create({…});
 </div>
 
 <p class="description">
-<b>orm(*).create(attributes)</b> creates an object with the js list of attributes passed in parameter. The object is returned in output so an object method can be chained after.
+<b>orm(*).create(attributes)</b> creates an object with the list of attributes passed as a parameter. The instance is returned to enable method chaining.
 </p>
 <p class="description">
-<b>obj.save()</b> or <b>orm(*).save(attributes)</b> asks to save an object on the server. If the validate function returns true the object is stored, else it is revert. The direct call from orm object bypass the object creation step so it is no recommanded.
+<b>obj.save()</b> or <b>orm(*).save(attributes)</b> saves an instance on the server. If the validate function returns true the object is stored; otherwise we revert the save. Calling save from the orm object bypasses the object creation step and so is not recommended.
 </p>
 <p class="description">
-<b>obj.remove()</b> or <b>orm(*).del(ref)</b> removes an object locally and on server if an id is specified.
+<b>obj.remove()</b> or <b>orm(*).del(ref)</b> removes an object locally and on the server if an id is specified.
 </p>
 <p class="description">
 <b>orm(*).reset()</b> removes all instances of this model.
@@ -83,24 +83,24 @@ orm('likeObj').create({…});
 </p>
 
 <p class="description">
-<b>orm(*).find(id, successCbk)</b> finds the object with specified id. If it isn’t available locally, it is retrieved on server. The success callback is called with the object in parameter when it is available. If not specified, callback defined in controllers will be called.
+<b>orm(*).find(id, successCbk)</b> finds the object with the specified id. If it isn’t available locally, we fetch the object from on server. The success callback is invoked with the object as a parameter when it is available. If not specified, callback defined in controllers will be called.
 </p>
 <p class="description">
-<b>orm(*).findByRef(ref, successCbk)</b> returns the object with specified reference. This is local reference returns at object creation so there’s no server retrieving possibility.
+<b>orm(*).findByRef(ref, successCbk)</b> returns the object with specified reference. This is the object instance as stored locally, so no call to the server is made.
 </p>
 <p class="description">
-<b>orm(*).findByCond(cond, successCbk)</b> finds a collection of local instances of the classes. There’s no server retrieving, it’s only a local filtering. The success callback is called with the collection in parameter when it is available. If not specified, callback defined in controllers will be called.
+<b>orm(*).findByCond(cond, successCbk)</b> finds a collection of local instances of the classes. Again, this is the object instances as stored locally, so no call to the server is made. The success callback, when available, is called with the collection as a parameter. If not specified, callback defined in controllers will be called.
 </p>
 <p class="description">
-<b>orm(*).select(cond, successCbk [optional])</b> finds the collection of matching objects. If the call hasn’t been done before, objects are retrieved on server, else local results are returned. The success callback is called with the collection in parameter when it is available. If not specified, callback defined in controllers will be called.
+<b>orm(*).select(cond, successCbk [optional])</b> finds the collection of matching objects. If this is the first request for an object it is retrieved from the server; otherwise the local reference is returned. The success callback, when available, is called with the collection as a parameter. If not specified, callback defined in controllers will be called.
 </p>
 <p class="description">
-<b>orm(*).fetch(cond, successCbk [optional])</b> finds the collection of matching objects. Objects are allways retrieved on server. It a kind of forced server call of select(). The success callback is called with the collection in parameter when it is available. If not specified, callback defined in controllers will be called.
+<b>orm(*).fetch(cond, successCbk [optional])</b> finds the collection of matching objects. Identical to select, except that objects are always retrieved from server. The success callback, when available, is called with the collection as a parameter. If not specified, callback defined in controllers will be called.
 </p>
 
 <p class="subtitle">Specific case: html ajax call</p>
 <p class="description">
-If you want to get a piece of html markup using ajax call, we recommand to use the global model "html" (call it in use dependencies using g/html).
+If you want to retrieve html via an ajax call, we recommend using the global model "html" (define it as a dependency in 'use' using g/html).
 </p>
 
 <div class="code">
@@ -145,7 +145,7 @@ orm('html').fetch({uriParams: {url: '/path/to/page'}}).success(function(obj) {
 </pre>
 </div>
 
-<p class="subtitle">ORM requesting in controller</p>
+<p class="subtitle">ORM requests in controller</p>
 
 <p class="description">
 This standard json format is used by the core.js framework to normalize ajax exchanges and simplify implementation on both Back-End and Front-End sides. You can see below the global definition of this format and details of how they are handled by Tetra.
